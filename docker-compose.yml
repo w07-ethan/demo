@@ -1,0 +1,96 @@
+version: '3.8'
+services:
+  dev-mysql:
+    image: bitnamilegacy/mysql:9.4.0
+    # This container_name can be used for internal connections between containers (running on the same docker virtual network)
+    container_name: dev-mysql
+    ports:
+      # This mapping means that requests sent to the ${MYSQL_PORT} on the host machine will be forwarded to port 3306 in the dev-mysql container. This setup allows users to access the MySQL database from outside the container, such as from a local machine or another service.
+      - '${MYSQL_PORT}:3306'
+    environment:
+      # Setup environment variables for container
+      - MYSQL_ROOT_PASSWORD=${MYSQL_PASSWORD}
+      - MYSQL_USER=${MYSQL_USERNAME}
+      - MYSQL_PASSWORD=${MYSQL_PASSWORD}
+      - MYSQL_DATABASE=${MYSQL_DATABASE}
+    volumes:
+      # Syncs msyql data from inside container to host machine, to keep them accross container restarts
+      - '${DATA_DIR}/components/mysql/data:/bitnami/mysql/data'
+      # Add custom script to init db
+      - './scripts/mysql-init.sql:/docker-entrypoint-initdb.d/init.sql'
+
+  dev-redis:
+    image: bitnamilegacy/redis:8.2.1
+    container_name: dev-redis
+    ports:
+      - '${REDIS_PORT}:6379'
+    environment:
+      - REDIS_PASSWORD=${REDIS_PASSWORD}
+    volumes:
+      - '${DATA_DIR}/components/redis:/bitnami/redis'
+    networks:
+      - dev-network
+
+  dev-kafka:
+    image: bitnamilegacy/kafka:3.3.2
+    container_name: dev-kafka
+    ports:
+      - '${KAFKA_PORT}:9094'
+    environment:
+      # Sets the timezone for the container to "Asia/Shanghai". This ensures that logs and timestamps inside the Kafka container align with the Shanghai timezone.
+      - TZ=Asia/Shanghai
+      # KAFKA_CFG_NODE_ID=0: Identifies the Kafka node with ID 0. This is crucial for multi-node Kafka clusters to distinguish each node uniquely.
+      - KAFKA_CFG_NODE_ID=0
+      # KAFKA_CFG_PROCESS_ROLES=controller,broker: Specifies the roles the Kafka node will perform, in this case, both as a controller (managing cluster metadata) and a broker (handling messages).
+      - KAFKA_CFG_PROCESS_ROLES=controller,broker
+      # KAFKA_CFG_CONTROLLER_QUORUM_VOTERS=0@<your_host>:9093: Defines the quorum voters for the Kafka controllers. It indicates that node 0 (the current node) acts as a voter for controller decisions and will be accessible at 9093 on <your_host>.
+      - KAFKA_CFG_CONTROLLER_QUORUM_VOTERS=0@<your_host>:9093
+      # The following lists different listeners for Kafka. Each listener binds a protocol to a specific port:
+      # PLAINTEXT for client connections (:9092). CONTROLLER for internal controller communication (:9093). EXTERNAL for external client access (:9094).SASL_PLAINTEXT for SASL-authenticated clients (:9095).
+      - KAFKA_CFG_LISTENERS=PLAINTEXT://:9092,CONTROLLER://:9093,EXTERNAL://:9094,SASL_PLAINTEXT://:9095
+      # KAFKA_CFG_ADVERTISED_LISTENERS specifies how clients should connect to Kafka externally:
+      # PLAINTEXT at dev-kafka:9092 for internal communication. EXTERNAL at 127.0.0.1:${KAFKA_PORT} (host access). SASL_PLAINTEXT for SASL connections (kafka:9095).
+      - KAFKA_CFG_ADVERTISED_LISTENERS=PLAINTEXT://dev-kafka:9092,EXTERNAL://127.0.0.1:${KAFKA_PORT},SASL_PLAINTEXT://kafka:9095
+      # The following maps security protocols to each listener. For example, CONTROLLER uses PLAINTEXT, and EXTERNAL uses SASL_PLAINTEXT.
+      - KAFKA_CFG_LISTENER_SECURITY_PROTOCOL_MAP=CONTROLLER:PLAINTEXT,EXTERNAL:SASL_PLAINTEXT,PLAINTEXT:PLAINTEXT,SASL_PLAINTEXT:SASL_PLAINTEXT
+      # Indicates that the CONTROLLER role should use the CONTROLLER listener for communications.
+      - KAFKA_CFG_CONTROLLER_LISTENER_NAMES=CONTROLLER
+      # Specifies users with relevant passwords that can connect to Kafka using SASL authentication
+      - KAFKA_CLIENT_USERS=${KAFKA_USERNAME}
+      - KAFKA_CLIENT_PASSWORDS=${KAFKA_PASSWORD}
+    volumes:
+      - '${DATA_DIR}/components/kafka/data:/bitnami/kafka/data'
+      # Maps a local file create-topics.sh from the ./scripts directory to the path /opt/bitnami/kafka/create_topic.sh inside the Kafka container
+      # This script can be used to automatically create Kafka topics when the container starts
+      - ./scripts/create-topics.sh:/opt/bitnami/kafka/create_topic.sh:ro
+    # Following command starts the Kafka server in the background using /opt/bitnami/scripts/kafka/run.sh. then sleep 5 to ensure that the Kafka server is fully up and running.
+    # Executes the create_topic.sh script, which is used to create Kafka topics. Uses 'wait' to keep the script running until all background processes (like the Kafka server) finish,
+    command: >
+      bash -c "
+      /opt/bitnami/scripts/kafka/run.sh & sleep 5; /opt/bitnami/kafka/create_topic.sh; wait
+      "
+
+  kafka-ui:
+    image: provectuslabs/kafka-ui:latest
+    container_name: dev-kafka-ui
+    ports:
+      - '${KAFKA_UI_PORT}:8080'
+    environment:
+      # Sets the name of the Kafka cluster displayed in the UI as "local."
+      - KAFKA_CLUSTERS_0_NAME=local
+      # Specifies the address (dev-kafka:9092) for the Kafka broker that the UI should connect to.
+      - KAFKA_CLUSTERS_0_BOOTSTRAPSERVERS=dev-kafka:9092
+      # Uses the provided ${KAFKA_USERNAME} for SASL (Simple Authentication and Security Layer) authentication with the Kafka cluster.
+      - KAFKA_CLUSTERS_0_SASL_USER=${KAFKA_USERNAME}
+      # Uses the ${KAFKA_PASSWORD} for authentication with the Kafka broker.
+      - KAFKA_CLUSTERS_0_SASL_PASSWORD=${KAFKA_PASSWORD}
+      # Sets the SASL mechanism as 'PLAIN', which is a simple username-password-based authentication method.
+      - KAFKA_CLUSTERS_0_SASL_MECHANISM=PLAIN
+      # Configures the communication protocol as SASL_PLAINTEXT, which means it uses SASL for authentication without encryption over plaintext communication.
+      - KAFKA_CLUSTERS_0_SECURITY_PROTOCOL=SASL_PLAINTEXT
+    depends_on:
+      - dev-kafka
+
+networks:
+  dev-network:
+    driver: bridge
