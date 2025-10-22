@@ -1,0 +1,65 @@
+package com.example.demo.exceptions;
+
+import com.example.demo.dto.response.AppResponse;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.validation.FieldError;
+import org.springframework.web.bind.MethodArgumentNotValidException;
+import org.springframework.web.bind.annotation.ExceptionHandler;
+import org.springframework.web.bind.annotation.RestControllerAdvice;
+import org.springframework.web.context.request.WebRequest;
+
+import java.util.HashMap;
+import java.util.Map;
+
+@RestControllerAdvice
+public class GlobalExceptionHandler {
+    /**
+     * Handles: Validation errors (@Valid)
+     */
+    @ExceptionHandler(MethodArgumentNotValidException.class)
+    public ResponseEntity<AppResponse<Object>> handleValidationExceptions(
+            MethodArgumentNotValidException ex, WebRequest request) {
+
+        Map<String, String> errors = new HashMap<>();
+        ex.getBindingResult().getAllErrors().forEach((error) -> {
+            String fieldName = ((FieldError) error).getField();
+            String errorMessage = error.getDefaultMessage();
+            errors.put(fieldName, errorMessage);
+        });
+
+        AppResponse<Object> apiResponse = AppResponse.error(
+                HttpStatus.BAD_REQUEST.value(),
+                "Validation Failed",
+                errors
+        );
+        return new ResponseEntity<>(apiResponse, HttpStatus.BAD_REQUEST);
+    }
+
+    /**
+     * Returns: HTTP 409 Conflict
+     */
+    @ExceptionHandler(ResourceAlreadyExistsException.class)
+    public ResponseEntity<AppResponse<Object>> handleResourceAlreadyExists(
+            ResourceAlreadyExistsException ex, WebRequest request) {
+
+        AppResponse<Object> apiResponse = AppResponse.error(
+                HttpStatus.CONFLICT.value(),
+                ex.getMessage()
+        );
+        return new ResponseEntity<>(apiResponse, HttpStatus.CONFLICT);
+    }
+
+    /**
+     * Handles: All other unexpected errors (e.g., NullPointerException)
+     * Returns: HTTP 500 Internal Server Error
+     */
+    @ExceptionHandler(Exception.class)
+    public ResponseEntity<AppResponse<Object>> handleAllUncaughtExceptions(Exception ex) {
+        AppResponse<Object> apiResponse = AppResponse.error(
+                HttpStatus.INTERNAL_SERVER_ERROR.value(),
+                "An unexpected error occurred"
+        );
+        return new ResponseEntity<>(apiResponse, HttpStatus.INTERNAL_SERVER_ERROR);
+    }
+}
