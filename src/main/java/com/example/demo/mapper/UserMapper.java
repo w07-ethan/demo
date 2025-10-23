@@ -2,14 +2,19 @@ package com.example.demo.mapper;
 
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.example.demo.model.User;
-import org.apache.ibatis.annotations.Mapper;
-import org.apache.ibatis.annotations.Param;
 
 import java.util.Optional;
 
-@Mapper
+/**
+ * <p>
+ * Mapper 接口
+ * </p>
+ *
+ * @author ethan
+ * @since 2025-10-23
+ */
 public interface UserMapper extends BaseMapper<User> {
-    Optional<User> findByEmail(@Param("email") String email);
+    Optional<User> findByUserName(String name);
 
-    Optional<User> findByUserName(@Param("username") String username);
+    Optional<User> findByEmail(String email);
 }

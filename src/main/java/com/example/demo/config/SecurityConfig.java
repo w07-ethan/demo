@@ -14,13 +14,9 @@ public class SecurityConfig {
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
-                // We are disabling CSRF (Cross-Site Request Forgery) protection.
-                // This is common for testing and for APIs that don't use browser sessions.
                 .csrf(AbstractHttpConfigurer::disable)
-
-                // This is the important part:
                 .authorizeHttpRequests(auth -> auth
-                        .anyRequest().permitAll() // This rule permits ALL requests
+                        .anyRequest().permitAll()
                 );
 
         return http.build();

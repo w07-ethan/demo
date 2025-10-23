@@ -3,7 +3,7 @@ package com.example.demo.controller;
 import com.example.demo.dto.request.user.CreateUserRequest;
 import com.example.demo.dto.response.AppResponse;
 import com.example.demo.dto.response.user.UserResponse;
-import com.example.demo.service.user.UserService;
+import com.example.demo.service.impl.UserServiceImpl;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -22,13 +22,13 @@ import org.springframework.web.bind.annotation.*;
 @AllArgsConstructor
 @Tag(name = "User API", description = "APIs for managing users")
 public class UserController {
-    private final UserService userService;
+    private final UserServiceImpl userService;
 
     @PostMapping(value = "/users", consumes = MediaType.APPLICATION_JSON_VALUE)
     @Operation(summary = "Create a new user", description = "Creates a new user account.")
     @ApiResponses(value = {
             @ApiResponse(
-                    responseCode = "200",
+                    responseCode = "201",
                     description = "User created successfully",
                     content = @Content(
                             mediaType = MediaType.APPLICATION_JSON_VALUE,
@@ -59,11 +59,10 @@ public class UserController {
     })
     public ResponseEntity<AppResponse<UserResponse>> createUser(@Valid @RequestBody CreateUserRequest createUserRequest) {
         UserResponse userResponse = userService.createUser(createUserRequest);
-        AppResponse<UserResponse> apiResponse = AppResponse.success(
+
+        return new ResponseEntity<>(AppResponse.success(
                 userResponse,
                 "User created successfully"
-        );
-
-        return new ResponseEntity<>(apiResponse, HttpStatus.CREATED);
+        ), HttpStatus.CREATED);
     }
 }
