@@ -1,0 +1,43 @@
+# Cursor Rules for Demo Project
+
+## Project Overview
+
+This is a Spring Boot demo project showcasing modern Java development practices with multiple technologies integration.
+
+## Technology Stack
+
+- **Framework**: Spring Boot 3.4.10
+- **Java Version**: 21
+- **Database**: MySQL 9.4.0
+- **Cache**: Redis 8.2.1
+- **Message Queue**: Apache Kafka 3.3.2
+- **ORM**: MyBatis Plus 3.5.14
+- **Database Migration**: Liquibase
+- **Security**: Spring Security
+- **API Documentation**: SpringDoc OpenAPI 3
+- **Build Tool**: Maven
+- **Containerization**: Docker & Docker Compose
+
+## Code Standards
+
+- Use English for all code, comments, and documentation
+- Follow Spring Boot best practices
+- Use Lombok for reducing boilerplate code
+- Implement proper exception handling
+- Use validation annotations for request DTOs
+- Follow RESTful API design principles
+
+## Project Structure
+
+- `src/main/java/com/example/demo/` - Main application code
+- `src/main/resources/` - Configuration and resources
+- `components/` - Docker data volumes
+- `scripts/` - Database and Kafka initialization scripts
+
+## Development Guidelines
+
+- Always use proper error handling with custom exceptions
+- Implement comprehensive API documentation with OpenAPI
+- Use Docker Compose for local development environment
+- Follow security best practices with Spring Security
+- Implement proper logging and monitoring
