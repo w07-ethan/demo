@@ -3,8 +3,8 @@ package com.example.demo.service.impl;
 import com.example.demo.dto.request.user.CreateUserRequest;
 import com.example.demo.dto.response.user.UserResponse;
 import com.example.demo.exceptions.ResourceAlreadyExistsException;
-import com.example.demo.model.User;
 import com.example.demo.mapper.UserMapper;
+import com.example.demo.model.UserPO;
 import com.example.demo.service.IUserService;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import lombok.AllArgsConstructor;
@@ -21,7 +21,7 @@ import org.springframework.stereotype.Service;
  */
 @Service
 @AllArgsConstructor
-public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements IUserService {
+public class UserServiceImpl extends ServiceImpl<UserMapper, UserPO> implements IUserService {
     private final UserMapper userMapper;
     private final PasswordEncoder passwordEncoder;
 
@@ -38,22 +38,22 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements IU
         }
 
         String encodedPassword = passwordEncoder.encode(request.password());
-        User user = new User()
+        UserPO userPO = new UserPO()
                 .setEmail(request.email())
                 .setUsername(request.username())
                 .setFirstName(request.firstName())
                 .setPasswordHash(encodedPassword)
                 .setLastName(request.lastName());
-        userMapper.insert(user);
+        userMapper.insert(userPO);
 
         return new UserResponse(
-                user.getId(),
-                user.getUsername(),
-                user.getEmail(),
-                user.getFirstName(),
-                user.getLastName(),
-                user.getCreatedAt(),
-                user.getUpdatedAt()
+                userPO.getId(),
+                userPO.getUsername(),
+                userPO.getEmail(),
+                userPO.getFirstName(),
+                userPO.getLastName(),
+                userPO.getCreatedAt(),
+                userPO.getUpdatedAt()
         );
     }
 }

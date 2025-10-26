@@ -19,7 +19,7 @@ public record CreateUserRequest(
 
         @NotBlank(message = "First name is required")
         String firstName,
-        @NotBlank(message = "First name is required")
+        @NotBlank(message = "Last name is required")
         String lastName
 ) {
 }

@@ -2,8 +2,8 @@ package com.example.demo.service;
 
 import com.example.demo.dto.request.user.CreateUserRequest;
 import com.example.demo.dto.response.user.UserResponse;
-import com.example.demo.model.User;
 import com.baomidou.mybatisplus.extension.service.IService;
+import com.example.demo.model.UserPO;
 
 /**
  * <p>
@@ -13,6 +13,6 @@ import com.baomidou.mybatisplus.extension.service.IService;
  * @author ethan
  * @since 2025-10-23
  */
-public interface IUserService extends IService<User> {
+public interface IUserService extends IService<UserPO> {
     UserResponse createUser(CreateUserRequest request);
 }
