@@ -47,6 +47,16 @@ databaseChangeLog:
                   defaultValueComputed: CURRENT_TIMESTAMP
                   constraints:
                     nullable: false
+              - column:
+                  name: deleted_at
+                  type: TIMESTAMP
+                  defaultOnNull: true
+              - column:
+                  name: is_active
+                  type: BOOLEAN
+                  defaultValueBoolean: false
+                  constraints:
+                    nullable: false
 
   - changeSet:
       id: 2

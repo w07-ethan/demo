@@ -1,6 +1,6 @@
 package com.example.demo.exceptions;
 
-import com.example.demo.dto.response.AppResponse;
+import com.example.demo.dto.response.AppVo;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.FieldError;
@@ -18,7 +18,7 @@ public class GlobalExceptionHandler {
      * Handles: Validation errors (@Valid)
      */
     @ExceptionHandler(MethodArgumentNotValidException.class)
-    public ResponseEntity<AppResponse<Object>> handleValidationExceptions(
+    public ResponseEntity<AppVo<Object>> handleValidationExceptions(
             MethodArgumentNotValidException ex, WebRequest request) {
 
         Map<String, String> errors = new HashMap<>();
@@ -28,7 +28,7 @@ public class GlobalExceptionHandler {
             errors.put(fieldName, errorMessage);
         });
 
-        AppResponse<Object> apiResponse = AppResponse.error(
+        AppVo<Object> apiResponse = AppVo.error(
                 HttpStatus.BAD_REQUEST.value(),
                 "Validation Failed",
                 errors
@@ -40,10 +40,10 @@ public class GlobalExceptionHandler {
      * Returns: HTTP 409 Conflict
      */
     @ExceptionHandler(ResourceAlreadyExistsException.class)
-    public ResponseEntity<AppResponse<Object>> handleResourceAlreadyExists(
+    public ResponseEntity<AppVo<Object>> handleResourceAlreadyExists(
             ResourceAlreadyExistsException ex, WebRequest request) {
 
-        AppResponse<Object> apiResponse = AppResponse.error(
+        AppVo<Object> apiResponse = AppVo.error(
                 HttpStatus.CONFLICT.value(),
                 ex.getMessage()
         );
@@ -55,8 +55,8 @@ public class GlobalExceptionHandler {
      * Returns: HTTP 500 Internal Server Error
      */
     @ExceptionHandler(Exception.class)
-    public ResponseEntity<AppResponse<Object>> handleAllUncaughtExceptions(Exception ex) {
-        AppResponse<Object> apiResponse = AppResponse.error(
+    public ResponseEntity<AppVo<Object>> handleAllUncaughtExceptions(Exception ex) {
+        AppVo<Object> apiResponse = AppVo.error(
                 HttpStatus.INTERNAL_SERVER_ERROR.value(),
                 "An unexpected error occurred"
         );

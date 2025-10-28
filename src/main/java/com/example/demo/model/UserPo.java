@@ -1,14 +1,11 @@
 package com.example.demo.model;
 
 import com.baomidou.mybatisplus.annotation.*;
-import com.baomidou.mybatisplus.extension.activerecord.Model;
+import com.example.demo.model.enums.ActiveStatus;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
 import lombok.experimental.Accessors;
-
-import java.io.Serializable;
-import java.time.LocalDateTime;
 
 /**
  * <p>
@@ -23,13 +20,7 @@ import java.time.LocalDateTime;
 @ToString
 @TableName("users")
 @Accessors(chain = true)
-public class UserPO extends Model<UserPO> implements Serializable {
-
-    private static final long serialVersionUID = 1L;
-
-    @TableId(value = "id", type = IdType.ASSIGN_ID)
-    private String id;
-
+public class UserPo extends BasePo<UserPo> {
     @TableField("username")
     private String username;
 
@@ -45,9 +36,6 @@ public class UserPO extends Model<UserPO> implements Serializable {
     @TableField("last_name")
     private String lastName;
 
-    @TableField(fill = FieldFill.INSERT_UPDATE)
-    private LocalDateTime createdAt;
-
-    @TableField(fill = FieldFill.UPDATE)
-    private LocalDateTime updatedAt;
+    @TableField("is_active")
+    private ActiveStatus isActive = ActiveStatus.INACTIVE;
 }

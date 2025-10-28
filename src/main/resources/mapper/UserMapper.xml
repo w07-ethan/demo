@@ -1,14 +1,19 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.example.demo.mapper.UserMapper">
-    <select id="findByEmail" resultType="com.example.demo.model.UserPO">
+    <select id="findByEmail" resultType="com.example.demo.model.UserPo">
         SELECT *
         FROM users
         WHERE email = #{email}
     </select>
-    <select id="findByUserName" resultType="com.example.demo.model.UserPO">
+    <select id="findByUserName" resultType="com.example.demo.model.UserPo">
         SELECT *
         FROM users
         WHERE username = #{username}
     </select>
+    <delete id="deleteByUsername">
+        delete
+        from users
+        where username = #{username,jdbcType=VARCHAR}
+    </delete>
 </mapper>
