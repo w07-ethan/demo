@@ -5,6 +5,7 @@ import com.example.demo.dto.request.user.UserPageRequest;
 import com.example.demo.dto.response.AppVo;
 import com.example.demo.dto.response.PageVo;
 import com.example.demo.dto.response.UserVo;
+import com.example.demo.service.IUserService;
 import com.example.demo.service.impl.UserServiceImpl;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
@@ -27,7 +28,7 @@ import java.net.URI;
 @AllArgsConstructor
 @Tag(name = "User API", description = "APIs for managing users")
 public class UserController {
-    private final UserServiceImpl userService;
+    private final IUserService userService;
 
     @GetMapping("/users")
     @Operation(summary = "Get paginated list of users", description = "Retrieves a paginated list of users with optional search and sorting.")
@@ -39,8 +40,13 @@ public class UserController {
 
     @PostMapping(value = "/users", consumes = MediaType.APPLICATION_JSON_VALUE)
     @Operation(summary = "Create a new user", description = "Creates a new user account.")
-    @ApiResponse(responseCode = "201", description = "User created successfully")
-    @ApiResponse(responseCode = "409", description = "Conflict - Username or email already exists")
+    @ApiResponses(
+            value = {
+                    @ApiResponse(responseCode = "201", description = "Created successfully"),
+                    @ApiResponse(responseCode = "400", description = "Invalid input data"),
+                    @ApiResponse(responseCode = "409", description = "User created successfully")
+            }
+    )
     public ResponseEntity<AppVo<UserVo>> createUser(@Valid @RequestBody CreateUserRequest createUserRequest) {
         UserVo userVo = userService.createUser(createUserRequest);
 

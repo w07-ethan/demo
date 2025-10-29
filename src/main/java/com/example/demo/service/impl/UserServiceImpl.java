@@ -15,9 +15,11 @@ import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import lombok.AllArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
 
 import java.util.List;
+import java.util.Set;
 
 /**
  * <p>
@@ -33,7 +35,14 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, UserPo> implements 
     private final PasswordEncoder passwordEncoder;
     private final UserConverter userConverter;
 
+    private static final Set<String> ALLOWED_SORT_FIELDS = Set.of("created_at", "updated_at", "email");
+
     public PageVo<UserVo> getUsers(UserPageRequest request) {
+        // Validate sort field
+        if (!ALLOWED_SORT_FIELDS.contains(request.getSortBy())) {
+            throw new IllegalArgumentException("Invalid sort field: " + request.getSortBy());
+        }
+
         // Build query wrapper
         QueryWrapper<UserPo> queryWrapper = new QueryWrapper<>();
 
@@ -70,6 +79,7 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, UserPo> implements 
 
 
     @Override
+    @Transactional
     public UserVo createUser(CreateUserRequest request) {
         // Check email exists
         if (baseMapper.findByEmail(request.email()).isPresent()) {

@@ -10,8 +10,8 @@ import lombok.Data;
 @Data
 @Schema(description = "Base pagination and sorting request")
 public class PageRequest {
-    public static final int DEFAULT_PAGE_SIZE = 10;
     public static final int DEFAULT_PAGE_NUMBER = 0;
+    public static final int DEFAULT_PAGE_SIZE = 10;
     public static final String DEFAULT_SORT_BY = "createdAt";
     public static final String DEFAULT_SORT_DIRECTION = "desc";
 
@@ -23,7 +23,7 @@ public class PageRequest {
     )
     @Schema(description = "Page number (0-based)", example = "0")
     @Min(value = 0, message = "Page number must be greater than or equal to 0")
-    private int page = DEFAULT_PAGE_SIZE;
+    private int page = DEFAULT_PAGE_NUMBER;
 
     @Parameter(
             name = "size",
@@ -34,7 +34,7 @@ public class PageRequest {
     @Schema(description = "Page size", example = "10")
     @Min(value = 1, message = "Page size must be at least 1")
     @Max(value = 100, message = "Page size must not exceed 100")
-    private int size = DEFAULT_PAGE_NUMBER;
+    private int size = DEFAULT_PAGE_SIZE;
 
     @Parameter(
             name = "sortBy",
