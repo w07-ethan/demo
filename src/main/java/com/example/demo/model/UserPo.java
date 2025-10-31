@@ -1,7 +1,7 @@
 package com.example.demo.model;
 
 import com.baomidou.mybatisplus.annotation.*;
-import com.example.demo.model.enums.ActiveStatus;
+import com.example.demo.model.enums.ActiveStus;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
@@ -37,5 +37,5 @@ public class UserPo extends BasePo<UserPo> {
     private String lastName;
 
     @TableField("is_active")
-    private ActiveStatus isActive = ActiveStatus.INACTIVE;
+    private ActiveStus isActive = ActiveStus.INACTIVE;
 }

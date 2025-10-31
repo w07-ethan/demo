@@ -3,8 +3,8 @@ package com.example.demo.service.impl;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.example.demo.converter.UserConverter;
-import com.example.demo.dto.request.user.CreateUserRequest;
-import com.example.demo.dto.request.user.UserPageRequest;
+import com.example.demo.dto.request.user.CreateUserRequestVo;
+import com.example.demo.dto.request.user.UserPageRequestVo;
 import com.example.demo.dto.response.PageVo;
 import com.example.demo.dto.response.UserVo;
 import com.example.demo.exceptions.ResourceAlreadyExistsException;
@@ -37,7 +37,7 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, UserPo> implements 
 
     private static final Set<String> ALLOWED_SORT_FIELDS = Set.of("created_at", "updated_at", "email");
 
-    public PageVo<UserVo> getUsers(UserPageRequest request) {
+    public PageVo<UserVo> getUsers(UserPageRequestVo request) {
         // Validate sort field
         if (!ALLOWED_SORT_FIELDS.contains(request.getSortBy())) {
             throw new IllegalArgumentException("Invalid sort field: " + request.getSortBy());
@@ -80,7 +80,7 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, UserPo> implements 
 
     @Override
     @Transactional
-    public UserVo createUser(CreateUserRequest request) {
+    public UserVo createUser(CreateUserRequestVo request) {
         // Check email exists
         if (baseMapper.findByEmail(request.email()).isPresent()) {
             throw new ResourceAlreadyExistsException("Email already exists");

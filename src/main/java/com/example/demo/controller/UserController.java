@@ -1,15 +1,12 @@
 package com.example.demo.controller;
 
-import com.example.demo.dto.request.user.CreateUserRequest;
-import com.example.demo.dto.request.user.UserPageRequest;
+import com.example.demo.dto.request.user.CreateUserRequestVo;
+import com.example.demo.dto.request.user.UserPageRequestVo;
 import com.example.demo.dto.response.AppVo;
 import com.example.demo.dto.response.PageVo;
 import com.example.demo.dto.response.UserVo;
 import com.example.demo.service.IUserService;
-import com.example.demo.service.impl.UserServiceImpl;
 import io.swagger.v3.oas.annotations.Operation;
-import io.swagger.v3.oas.annotations.media.Content;
-import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -32,7 +29,7 @@ public class UserController {
 
     @GetMapping("/users")
     @Operation(summary = "Get paginated list of users", description = "Retrieves a paginated list of users with optional search and sorting.")
-    public ResponseEntity<AppVo<PageVo<UserVo>>> getUsers(@Valid @ParameterObject UserPageRequest request) {
+    public ResponseEntity<AppVo<PageVo<UserVo>>> getUsers(@Valid @ParameterObject UserPageRequestVo request) {
         PageVo<UserVo> users = userService.getUsers(request);
 
         return ResponseEntity.ok(AppVo.success(users, "Users retrieved successfully"));
@@ -47,7 +44,7 @@ public class UserController {
                     @ApiResponse(responseCode = "409", description = "User created successfully")
             }
     )
-    public ResponseEntity<AppVo<UserVo>> createUser(@Valid @RequestBody CreateUserRequest createUserRequest) {
+    public ResponseEntity<AppVo<UserVo>> createUser(@Valid @RequestBody CreateUserRequestVo createUserRequest) {
         UserVo userVo = userService.createUser(createUserRequest);
 
         URI location1 = ServletUriComponentsBuilder

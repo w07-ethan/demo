@@ -1,0 +1,19 @@
+spring:
+  datasource:
+    url: jdbc:mysql://localhost:3306/demo
+    username: demo
+    password: demo
+    driver-class-name: com.mysql.cj.jdbc.Driver
+
+paypal:
+  enabled: true
+  client-id: example-client-id
+  client-secret: example-client-secret
+  mode: sandbox
+  return-url: http://localhost:8081/paypal/return
+  cancel-url: http://localhost:8081/paypal/cancel
+  brand-name: Demo Shop
+
+logging:
+  level:
+    com.example.demo.mapper: DEBUG

@@ -1,6 +1,7 @@
 package com.example.demo.exceptions;
 
 import com.example.demo.dto.response.AppVo;
+import com.w07.extn.payment.paypal.exception.PaypalBusinessException;
 import io.swagger.v3.oas.annotations.Operation;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -61,6 +62,20 @@ public class GlobalExceptionHandler {
                 ex.getMessage()
         );
         return new ResponseEntity<>(apiResponse, HttpStatus.BAD_REQUEST);
+    }
+
+    /**
+     * Handles: Custom business exceptions for Paypal
+     */
+    @ExceptionHandler(PaypalBusinessException.class)
+    public ResponseEntity<AppVo<Object>> handlePaypalBusinessException(
+            PaypalBusinessException ex) {
+
+        AppVo<Object> apiResponse = AppVo.error(
+                ex.getErrorCode(),
+                ex.getMessage()
+        );
+        return new ResponseEntity<>(apiResponse, HttpStatus.UNPROCESSABLE_ENTITY);
     }
 
     /**
