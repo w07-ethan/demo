@@ -12,6 +12,7 @@ import com.example.demo.mapper.UserMapper;
 import com.example.demo.model.UserPo;
 import com.example.demo.service.IUserService;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.example.demo.utils.XMessages;
 import lombok.AllArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -40,7 +41,7 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, UserPo> implements 
     public PageVo<UserVo> getUsers(UserPageRequestVo request) {
         // Validate sort field
         if (!ALLOWED_SORT_FIELDS.contains(request.getSortBy())) {
-            throw new IllegalArgumentException("Invalid sort field: " + request.getSortBy());
+            throw new IllegalArgumentException(XMessages.getMessage("user.validation.sortField.invalid", request.getSortBy()));
         }
 
         // Build query wrapper
@@ -83,12 +84,12 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, UserPo> implements 
     public UserVo createUser(CreateUserRequestVo request) {
         // Check email exists
         if (baseMapper.findByEmail(request.email()).isPresent()) {
-            throw new ResourceAlreadyExistsException("Email already exists");
+            throw new ResourceAlreadyExistsException(XMessages.getMessage("user.email.exists"));
         }
 
         // Check username exists
         if (baseMapper.findByUserName(request.username()).isPresent()) {
-            throw new ResourceAlreadyExistsException("Username already exists");
+            throw new ResourceAlreadyExistsException(XMessages.getMessage("user.username.exists"));
         }
 
         String encodedPassword = passwordEncoder.encode(request.password());

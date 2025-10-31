@@ -1,14 +1,13 @@
 package com.example.demo.exceptions;
 
 import com.example.demo.dto.response.AppVo;
+import com.example.demo.utils.XMessages;
 import com.w07.extn.payment.paypal.exception.PaypalBusinessException;
-import io.swagger.v3.oas.annotations.Operation;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
-import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.context.request.WebRequest;
 
@@ -33,7 +32,7 @@ public class GlobalExceptionHandler {
 
         AppVo<Object> apiResponse = AppVo.error(
                 HttpStatus.BAD_REQUEST.value(),
-                "Validation Failed",
+                XMessages.getMessage("validation.failed"),
                 errors
         );
         return new ResponseEntity<>(apiResponse, HttpStatus.BAD_REQUEST);
@@ -86,7 +85,7 @@ public class GlobalExceptionHandler {
     public ResponseEntity<AppVo<Object>> handleAllUncaughtExceptions(Exception ex) {
         AppVo<Object> apiResponse = AppVo.error(
                 HttpStatus.INTERNAL_SERVER_ERROR.value(),
-                "An unexpected error occurred"
+                XMessages.getMessage("error.unexpected")
         );
         return new ResponseEntity<>(apiResponse, HttpStatus.INTERNAL_SERVER_ERROR);
     }

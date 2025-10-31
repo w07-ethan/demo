@@ -9,10 +9,10 @@ import java.util.Map;
 
 @Data
 public class CapturePaymentRequestVo {
-    @NotNull(message = "Token is required")
+    @NotNull(message = "{validation.token.required}")
     private String token;
 
-    @NotNull(message = "Payment method is required")
+    @NotNull(message = "{validation.paymentMethod.required}")
     private String paymentMethod;
 
     private Map<String, Object> additionalProperties = new HashMap<>();

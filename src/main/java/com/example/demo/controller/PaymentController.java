@@ -5,9 +5,8 @@ import com.example.demo.dto.request.payment.CreatePaymentRequestVo;
 import com.example.demo.dto.response.AppVo;
 import com.example.demo.dto.response.payment.CapturePaymentResponseVo;
 import com.example.demo.dto.response.payment.CreatePaymentResponseVo;
-import com.example.demo.service.IPaymentService;
 import com.example.demo.service.impl.PaymentServiceImpl;
-import com.example.demo.service.payment.handler.PaymentGateway;
+import com.example.demo.utils.XMessages;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
@@ -30,7 +29,7 @@ public class PaymentController {
     public ResponseEntity<AppVo<CreatePaymentResponseVo>> initPayment(@Valid @RequestBody CreatePaymentRequestVo request) {
         CreatePaymentResponseVo createPaymentResponseVo = paymentService.initPayment(request);
 
-        return ResponseEntity.ok(AppVo.success(createPaymentResponseVo));
+        return ResponseEntity.ok(AppVo.success(createPaymentResponseVo, XMessages.getMessage("payment.init.success")));
     }
 
     @PostMapping(value = "/capture")
@@ -40,6 +39,6 @@ public class PaymentController {
     ) {
         CapturePaymentResponseVo createPaymentResponseVo = paymentService.capturePayment(capturePaymentRequestVo);
 
-        return ResponseEntity.ok(AppVo.success(createPaymentResponseVo));
+        return ResponseEntity.ok(AppVo.success(createPaymentResponseVo, XMessages.getMessage("payment.capture.success")));
     }
 }

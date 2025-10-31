@@ -7,12 +7,16 @@ import io.swagger.v3.oas.models.Operation;
 import io.swagger.v3.oas.models.media.Content;
 import io.swagger.v3.oas.models.media.MediaType;
 import io.swagger.v3.oas.models.media.Schema;
+import io.swagger.v3.oas.models.media.StringSchema;
+import io.swagger.v3.oas.models.parameters.HeaderParameter;
 import io.swagger.v3.oas.models.responses.ApiResponse;
 import org.springdoc.core.customizers.OpenApiCustomizer;
 import org.springdoc.core.customizers.OperationCustomizer;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.method.HandlerMethod;
+
+import java.util.Arrays;
 
 @OpenAPIDefinition(
         info = @Info(
@@ -26,6 +30,17 @@ public class SwaggerConfig {
     @Bean
     public OperationCustomizer globalResponses() {
         return (Operation operation, HandlerMethod handlerMethod) -> {
+            // Add Accept-Language header parameter
+            operation.addParametersItem(new HeaderParameter()
+                    .name("Accept-Language")
+                    .description("Language preference (en for English, vi for Vietnamese)")
+                    .required(false)
+                    .schema(new StringSchema()
+                            ._enum(Arrays.asList("en", "vi"))
+                            ._default("en"))
+                    .example("en"));
+
+            // Add global 500 error response
             operation.getResponses().addApiResponse("500",
                     new ApiResponse()
                             .description("Internal server error")

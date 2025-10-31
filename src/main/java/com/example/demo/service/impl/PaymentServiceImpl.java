@@ -1,6 +1,5 @@
 package com.example.demo.service.impl;
 
-import com.baomidou.mybatisplus.extension.service.IService;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.example.demo.dto.request.payment.CapturePaymentRequestVo;
 import com.example.demo.dto.request.payment.CreatePaymentRequestVo;
@@ -11,6 +10,7 @@ import com.example.demo.model.PaymentPo;
 import com.example.demo.service.IPaymentService;
 import com.example.demo.service.payment.handler.PaymentGateway;
 import com.example.demo.service.payment.handler.PaymentGatewayFactory;
+import com.example.demo.utils.XMessages;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -24,7 +24,7 @@ public class PaymentServiceImpl extends ServiceImpl<PaymentMapper, PaymentPo> im
     private PaymentGateway getPaymentGateway(String gatewayName) {
         PaymentGateway gateway = paymentGatewayFactory.getGateway(gatewayName);
         if (gateway == null) {
-            throw new IllegalArgumentException("No active gateway found for: " + gatewayName);
+            throw new IllegalArgumentException(XMessages.getMessage("payment.error.gateway-not-found", gatewayName));
         }
 
         return gateway;

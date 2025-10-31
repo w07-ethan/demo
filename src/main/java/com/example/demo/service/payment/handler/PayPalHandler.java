@@ -8,9 +8,12 @@ import com.example.demo.dto.response.payment.CreatePaymentResponseVo;
 import com.example.demo.model.enums.PaymentMethod;
 import com.example.demo.model.enums.PaymentStus;
 import com.example.demo.utils.XMap;
+import com.example.demo.utils.XMessages;
 import com.paypal.sdk.models.CheckoutPaymentIntent;
 import com.paypal.sdk.models.Order;
 import com.w07.extn.payment.paypal.exception.PaypalBusinessException;
+import com.w07.extn.payment.paypal.model.request.PayPalCapturePaymentRequest;
+import com.w07.extn.payment.paypal.model.request.PayPalCreatePaymentRequest;
 import com.w07.extn.payment.paypal.service.PayPalService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -49,13 +52,13 @@ public class PayPalHandler implements PaymentGateway {
 
     @Override
     public CreatePaymentResponseVo initPayment(CreatePaymentRequestVo createPaymentRequestVo) {
-        Map<String, Object> request = prepareInitRequest(createPaymentRequestVo);
-        Map<String, Object> response = payPalService.createPayment(request);
+        PayPalCreatePaymentRequest payPalCreatePaymentRequest = prepareInitRequest(createPaymentRequestVo);
+        Map<String, Object> response = payPalService.createPayment(payPalCreatePaymentRequest);
 
         validateResponse(response);
+
         Order order = XMap.get(response, "order", Order.class);
         validateOrder(order);
-
         String status = XMap.get(response, "status", String.class, PaymentConst.DEFAULT_STATUS_RESPONSE);
         String redirectUrl = XMap.get(response, "approvalUrl", String.class, PaymentConst.DEFAULT_URL_APPROVAL);
 
@@ -68,14 +71,13 @@ public class PayPalHandler implements PaymentGateway {
 
     @Override
     public CapturePaymentResponseVo capturePayment(CapturePaymentRequestVo capturePaymentRequestVo) {
-        Map<String, Object> request = prepareCaptureRequest(capturePaymentRequestVo);
-        Map<String, Object> response = payPalService.capturePayment(request);
+        PayPalCapturePaymentRequest payPalCapturePaymentRequest = prepareCaptureRequest(capturePaymentRequestVo);
+        Map<String, Object> response = payPalService.capturePayment(payPalCapturePaymentRequest);
 
         validateResponse(response);
 
         Order order = XMap.get(response, "order", Order.class);
         validateOrder(order);
-
         String status = order.getStatus().value();
         BigDecimal totalCapturedAmount = order.getPurchaseUnits().stream()
                 .flatMap(unit -> unit.getPayments().getCaptures().stream())
@@ -89,15 +91,14 @@ public class PayPalHandler implements PaymentGateway {
                 .gatewayTransactionId(order.getId())
                 .paymentMethod(PaymentMethod.PAYPAL)
                 .paymentStatus(status.equalsIgnoreCase("COMPLETED") ? PaymentStus.COMPLETED : PaymentStus.CANCELLED)
-                .failureMessage(status.equalsIgnoreCase("COMPLETED") ? null : "Payment not completed successfully")
+                .failureMessage(status.equalsIgnoreCase("COMPLETED") ? null : XMessages.getMessage("payment.error.not-completed"))
                 .build();
     }
 
-    private Map<String, Object> prepareInitRequest(CreatePaymentRequestVo createPaymentRequestVo) {
+    private PayPalCreatePaymentRequest prepareInitRequest(CreatePaymentRequestVo createPaymentRequestVo) {
         Map<String, Object> payPalRequest = new HashMap<>();
         Map<String, Object> additionalProperties = createPaymentRequestVo.getAdditionalProperties();
 
-        payPalRequest.put("totalPrice", createPaymentRequestVo.getTotalPrice());
         payPalRequest.put("checkoutId", "1"); // This would be dynamically generated
         payPalRequest.put("intent", CheckoutPaymentIntent.CAPTURE);
         payPalRequest.put("currencyCode", XMap.get(additionalProperties, "currencyCode", String.class, PaymentConst.DEFAULT_CURRENCY_CODE));
@@ -105,20 +106,23 @@ public class PayPalHandler implements PaymentGateway {
         payPalRequest.put("cancelUrl", CANCEL_URL);
         payPalRequest.put("brandName", BRAND_NAME);
 
-        return payPalRequest;
+        return PayPalCreatePaymentRequest.builder()
+                .totalPrice(createPaymentRequestVo.getTotalPrice())
+                .additionalProperties(payPalRequest)
+                .build();
     }
 
-    private Map<String, Object> prepareCaptureRequest(CapturePaymentRequestVo capturePaymentRequestVo) {
-        Map<String, Object> payPalRequest = new HashMap<>();
-        payPalRequest.put("token", capturePaymentRequestVo.getToken());
-        return payPalRequest;
+    private PayPalCapturePaymentRequest prepareCaptureRequest(CapturePaymentRequestVo capturePaymentRequestVo) {
+        return PayPalCapturePaymentRequest.builder()
+                .token(capturePaymentRequestVo.getToken())
+                .build();
     }
 
     private void validateResponse(Map<String, Object> response) {
         Integer code = XMap.get(response, "code", Integer.class, 0);
         if (code != 200 && code != 201) {
             throw new PaypalBusinessException(
-                    XMap.get(response, "message", String.class, "Unknown error"),
+                    XMap.get(response, "message", String.class, XMessages.getMessage("payment.error.unknown")),
                     code
             );
         }
@@ -127,7 +131,7 @@ public class PayPalHandler implements PaymentGateway {
     private void validateOrder(Order order) {
         if (order == null || order.getId() == null) {
             throw new PaypalBusinessException(
-                    "Invalid order data received from PayPal",
+                    XMessages.getMessage("payment.error.invalid-order"),
                     HttpStatus.NOT_FOUND.value()
             );
         }

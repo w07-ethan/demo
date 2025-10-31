@@ -6,6 +6,7 @@ import com.example.demo.dto.response.AppVo;
 import com.example.demo.dto.response.PageVo;
 import com.example.demo.dto.response.UserVo;
 import com.example.demo.service.IUserService;
+import com.example.demo.utils.XMessages;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
@@ -32,7 +33,7 @@ public class UserController {
     public ResponseEntity<AppVo<PageVo<UserVo>>> getUsers(@Valid @ParameterObject UserPageRequestVo request) {
         PageVo<UserVo> users = userService.getUsers(request);
 
-        return ResponseEntity.ok(AppVo.success(users, "Users retrieved successfully"));
+        return ResponseEntity.ok(AppVo.success(users, XMessages.getMessage("user.retrieved.success")));
     }
 
     @PostMapping(value = "/users", consumes = MediaType.APPLICATION_JSON_VALUE)
@@ -53,6 +54,6 @@ public class UserController {
                 .buildAndExpand(userVo.id())
                 .toUri();
 
-        return ResponseEntity.created(location1).body(AppVo.created(userVo, "User created successfully"));
+        return ResponseEntity.created(location1).body(AppVo.created(userVo, XMessages.getMessage("user.created.success")));
     }
 }

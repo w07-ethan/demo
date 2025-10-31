@@ -4,15 +4,16 @@ import com.fasterxml.jackson.annotation.JsonAnySetter;
 import jakarta.validation.constraints.NotNull;
 import lombok.Data;
 
+import java.math.BigDecimal;
 import java.util.HashMap;
 import java.util.Map;
 
 @Data
 public class CreatePaymentRequestVo {
-    @NotNull(message = "Total price is required")
-    private Double totalPrice;
+    @NotNull(message = "{validation.totalPrice.required}")
+    private BigDecimal totalPrice;
 
-    @NotNull(message = "Payment method is required")
+    @NotNull(message = "{validation.paymentMethod.required}")
     private String paymentMethod;
 
     private Map<String, Object> additionalProperties = new HashMap<>();

@@ -6,25 +6,25 @@ import jakarta.validation.constraints.Size;
 import jakarta.validation.constraints.Pattern;
 
 public record CreateUserRequestVo(
-        @NotBlank(message = "Username is required and cannot be blank.")
-        @Size(min = 3, max = 50, message = "Username must be between 3 and 50 characters.")
+        @NotBlank(message = "{validation.username.required}")
+        @Size(min = 3, max = 50, message = "{validation.username.size}")
         String username,
 
-        @NotBlank(message = "Password is required.")
-        @Size(min = 8, message = "Password must be at least 8 characters long.")
+        @NotBlank(message = "{validation.password.required}")
+        @Size(min = 8, message = "{validation.password.size}")
         @Pattern(
                 regexp = "^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d)(?=.*[@$!%*?&])[A-Za-z\\d@$!%*?&]{8,}$",
-                message = "Password must contain at least one uppercase letter, one lowercase letter, one digit, and one special character"
+                message = "{validation.password.pattern}"
         )
         String password,
 
-        @NotBlank(message = "Email is required.")
-        @Email(message = "Please provide a valid email address.")
+        @NotBlank(message = "{validation.email.required}")
+        @Email(message = "{validation.email.invalid}")
         String email,
 
-        @NotBlank(message = "First name is required")
+        @NotBlank(message = "{validation.firstName.required}")
         String firstName,
-        @NotBlank(message = "Last name is required")
+        @NotBlank(message = "{validation.lastName.required}")
         String lastName
 ) {
 }
