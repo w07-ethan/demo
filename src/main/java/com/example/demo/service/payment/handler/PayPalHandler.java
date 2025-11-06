@@ -22,7 +22,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Component;
 
 import java.math.BigDecimal;
-import java.util.HashMap;
 import java.util.Map;
 
 @Component
@@ -96,19 +95,15 @@ public class PayPalHandler implements PaymentGateway {
     }
 
     private PayPalCreatePaymentRequest prepareInitRequest(CreatePaymentRequestVo createPaymentRequestVo) {
-        Map<String, Object> payPalRequest = new HashMap<>();
         Map<String, Object> additionalProperties = createPaymentRequestVo.getAdditionalProperties();
-
-        payPalRequest.put("checkoutId", "1"); // This would be dynamically generated
-        payPalRequest.put("intent", CheckoutPaymentIntent.CAPTURE);
-        payPalRequest.put("currencyCode", XMap.get(additionalProperties, "currencyCode", String.class, PaymentConst.DEFAULT_CURRENCY_CODE));
-        payPalRequest.put("returnUrl", RETURN_URL);
-        payPalRequest.put("cancelUrl", CANCEL_URL);
-        payPalRequest.put("brandName", BRAND_NAME);
 
         return PayPalCreatePaymentRequest.builder()
                 .totalPrice(createPaymentRequestVo.getTotalPrice())
-                .additionalProperties(payPalRequest)
+                .returnUrl(RETURN_URL)
+                .cancelUrl(CANCEL_URL)
+                .brandName(BRAND_NAME)
+                .intent(CheckoutPaymentIntent.CAPTURE)
+                .currencyCode(XMap.get(additionalProperties, "currencyCode", String.class, PaymentConst.DEFAULT_CURRENCY_CODE))
                 .build();
     }
 

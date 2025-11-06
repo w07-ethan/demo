@@ -1,18 +1,19 @@
 package com.example.demo.config;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Locale;
 import org.springframework.context.MessageSource;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.support.ResourceBundleMessageSource;
+import org.springframework.lang.NonNull;
 import org.springframework.validation.beanvalidation.LocalValidatorFactoryBean;
 import org.springframework.web.servlet.LocaleResolver;
 import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 import org.springframework.web.servlet.i18n.AcceptHeaderLocaleResolver;
 import org.springframework.web.servlet.i18n.LocaleChangeInterceptor;
-
-import java.util.Arrays;
-import java.util.Locale;
 
 @Configuration
 public class MessageSourceConfig implements WebMvcConfigurer {
@@ -32,27 +33,25 @@ public class MessageSourceConfig implements WebMvcConfigurer {
     public LocaleResolver localeResolver() {
         AcceptHeaderLocaleResolver localeResolver = new AcceptHeaderLocaleResolver();
         localeResolver.setDefaultLocale(Locale.ENGLISH);
-        localeResolver.setSupportedLocales(Arrays.asList(
-                Locale.ENGLISH,
-                Locale.forLanguageTag("vi")
-        ));
+        localeResolver.setSupportedLocales(
+                new ArrayList<>(Arrays.asList(Locale.ENGLISH, Locale.forLanguageTag("vi"))));
         return localeResolver;
     }
 
     @Bean
-    public LocaleChangeInterceptor localeChangeInterceptor() {
+    public @NonNull LocaleChangeInterceptor localeChangeInterceptor() {
         LocaleChangeInterceptor interceptor = new LocaleChangeInterceptor();
         interceptor.setParamName("lang");
         return interceptor;
     }
 
     @Override
-    public void addInterceptors(InterceptorRegistry registry) {
+    public void addInterceptors(@NonNull InterceptorRegistry registry) {
         registry.addInterceptor(localeChangeInterceptor());
     }
 
     @Bean
-    public LocalValidatorFactoryBean validator(MessageSource messageSource) {
+    public LocalValidatorFactoryBean validator(@NonNull MessageSource messageSource) {
         LocalValidatorFactoryBean bean = new LocalValidatorFactoryBean();
         bean.setValidationMessageSource(messageSource);
         return bean;

@@ -1,0 +1,69 @@
+---
+alwaysApply: true
+---
+
+# MyBatis Plus ID Generation Rules
+
+## ID Field Pattern for All Tables
+
+When creating entity classes that extend `BasePo`, follow these rules for ID generation:
+
+### Standard ID Configuration
+
+All entity classes should **extend `BasePo<T>`** which automatically provides:
+
+```java
+@TableId(value = "id", type = IdType.ASSIGN_ID)
+private String id;
+```
+
+### Rules:
+
+1. **Never manually define ID fields** in entity classes that extend `BasePo`
+
+   - The `BasePo` base class already provides the ID field
+   - Extending `BasePo` automatically gives you the correct ID configuration
+
+2. **Database Schema Requirements:**
+
+   - ID column type: `VARCHAR(32)`
+   - Primary key constraint: `PRIMARY KEY`
+   - Not null constraint: `NOT NULL`
+   - Example from Liquibase:
+     ```yaml
+     - column:
+         name: id
+         type: VARCHAR(32)
+         constraints:
+           primaryKey: true
+           nullable: false
+     ```
+
+3. **ID Generation Behavior:**
+
+   - `IdType.ASSIGN_ID` automatically generates unique IDs (Snowflake algorithm)
+   - IDs are generated as String values
+   - No manual ID assignment needed - MyBatis Plus handles it automatically
+
+4. **Example Entity Structure:**
+
+   ```java
+   @Getter
+   @Setter
+   @TableName("table_name")
+   @Accessors(chain = true)
+   public class EntityPo extends BasePo<EntityPo> {
+       // DO NOT define id field here - it's inherited from BasePo
+
+       @TableField("column_name")
+       private String columnName;
+   }
+   ```
+
+### Important Notes:
+
+- ✅ **DO**: Extend `BasePo<T>` for all entity classes
+- ✅ **DO**: Use `VARCHAR(32)` for ID columns in database
+- ❌ **DON'T**: Define `id` field in entity classes that extend `BasePo`
+- ❌ **DON'T**: Use auto-increment or UUID() for ID generation in database
+- ❌ **DON'T**: Manually set ID values - let MyBatis Plus generate them

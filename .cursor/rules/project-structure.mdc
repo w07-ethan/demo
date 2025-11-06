@@ -1,0 +1,29 @@
+---
+alwaysApply: true
+---
+
+# Project Architecture
+
+- Layered Architecture:
+  - Controller: src/main/java/com/example/demo/controller
+  - Service: src/main/java/com/example/demo/service
+  - Repository: src/main/java/com/example/demo/mapper
+  - Model: src/main/java/com/example/demo/model
+  - Configuration: src/main/java/com/example/demo/config
+  - Mapstruct Converter: src/main/java/com/example/demo/converter
+  - DTO: src/main/java/com/example/demo/dto
+  - Exception Handling: src/main/java/com/example/demo/exceptions
+  - Utility Classes: src/main/java/com/example/demo/utils
+  - Management Database Migrations use Liquibase: src/main/resources/db/changelog
+- Database ORM: Mybatis Plus 3.5.14
+
+# Coding Standards
+
+# External Dependencies
+
+- [Spring Framework Boot]: https://docs.spring.io/spring-boot/3.4/index.html
+- [Mybatis Plus implementation]: https://github.com/baomidou/mybatis-plus/tree/v3.5.14
+- [Hutool for Utils]: https://github.com/chinabugotech/hutool/tree/5.8.41
+- [Mapstruct for Object Mapping]: https://github.com/mapstruct/mapstruct/tree/1.6.3
+- [Lombok for Boilerplate Code Reduction]: https://github.com/projectlombok/lombok/tree/master
+- [Liquibase for Database Migrations]: https://github.com/liquibase/liquibase/tree/v5.0.1

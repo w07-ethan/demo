@@ -1,16 +1,18 @@
 package com.example.demo.model;
 
-import com.baomidou.mybatisplus.annotation.*;
+import java.time.LocalDateTime;
+import com.baomidou.mybatisplus.annotation.FieldFill;
+import com.baomidou.mybatisplus.annotation.IdType;
+import com.baomidou.mybatisplus.annotation.TableField;
+import com.baomidou.mybatisplus.annotation.TableId;
+import com.baomidou.mybatisplus.annotation.TableLogic;
 import com.baomidou.mybatisplus.extension.activerecord.Model;
 import lombok.Getter;
 import lombok.Setter;
 
-import java.io.Serializable;
-import java.time.LocalDateTime;
-
 @Getter
 @Setter
-public abstract class BasePo<T extends Model<T>> extends Model<T> implements Serializable {
+public abstract class BasePo<T extends Model<T>> extends Model<T> {
     private static final long serialVersionUID = 1L;
 
     @TableId(value = "id", type = IdType.ASSIGN_ID)

@@ -14,7 +14,8 @@ public class XMessages {
 
     public static String getMessage(String messageKey, Object... args) {
         try {
-            return messageSource.getMessage(messageKey, args, LocaleContextHolder.getLocale());
+            return messageSource.getMessage(messageKey == null ? "" : messageKey, args,
+                    LocaleContextHolder.getLocale());
         } catch (Exception ex) {
             return messageKey;
         }

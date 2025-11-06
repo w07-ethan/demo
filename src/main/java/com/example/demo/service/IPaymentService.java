@@ -2,7 +2,6 @@ package com.example.demo.service;
 
 import com.baomidou.mybatisplus.extension.service.IService;
 import com.example.demo.model.PaymentPo;
-import com.example.demo.service.payment.handler.PaymentGateway;
 
 /**
  * <p>
