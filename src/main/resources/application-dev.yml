@@ -8,8 +8,8 @@ spring:
 paypal:
   url-config-key: http://127.0.0.1:3000/api/paypal/config
   enabled: true
-  client-id: AVIOTMgACReUWQhXhHg1FPuBYW6jYXOfD0g9AlGa84BkaSQJmqfScgNEoM6f8tMeu9BInLpGk3urbYvO
-  client-secret: EOv2FCEizrKrPdEvunHoG6ROW5x4d1Cfx5eg0fnT3omimfV_B1nlIAZYGOFU39RiTU9aFnvpXYr1qVOX
+  client-id: test
+  client-secret: test
   mode: sandbox
   return-url: http://localhost:8081/paypal/return
   cancel-url: http://localhost:8081/paypal/cancel
